@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Bazar — Master Control Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Syne',sans-serif;background:#f0faf4;min-height:100vh;color:#1c2e24}
+.top-bar{background:#1a7a4a;padding:0.8rem 1.5rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+.top-logo{font-size:1.1rem;font-weight:800;color:white}.top-logo span{color:#f9a825}
+.user-info{color:white;font-family:'Tiro Bangla',serif;font-size:0.85rem;display:flex;align-items:center;gap:0.5rem}
+.main{max-width:1000px;margin:0 auto;padding:1.5rem 1rem}
+.header{text-align:center;margin-bottom:2rem;padding:2rem;background:white;border-radius:16px;border:1.5px solid #c5dccb;box-shadow:0 2px 10px rgba(26,122,74,0.06)}
+.header h1{font-family:'Tiro Bangla',serif;font-size:2.2rem;color:#1c2e24;margin-bottom:0.5rem}
+.header p{font-family:'Tiro Bangla',serif;font-size:1rem;color:#5a7a66}
+.breadcrumb{background:white;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;border:1.5px solid #c5dccb;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Tiro Bangla',serif;font-size:0.9rem}
+.breadcrumb-item{color:#5a7a66;cursor:pointer;transition:all 0.2s}
+.breadcrumb-item:hover{color:#1a7a4a}
+.breadcrumb-item.active{color:#1a7a4a;font-weight:700;cursor:default}
+.breadcrumb-sep{color:#c5dccb}
+.section-card{background:white;border-radius:14px;padding:1.5rem;margin-bottom:1.2rem;border:1.5px solid #c5dccb;box-shadow:0 2px 10px rgba(26,122,74,0.06)}
+.section-card h2{font-family:'Tiro Bangla',serif;font-size:1.3rem;color:#1a7a4a;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+.grid{display:grid;gap:1rem}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.grid-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.card{background:#f0faf4;border-radius:12px;padding:1.5rem;border:1.5px solid #c5dccb;cursor:pointer;transition:all 0.2s;text-align:center}
+.card:hover{transform:translateY(-3px);border-color:#1a7a4a;box-shadow:0 6px 20px rgba(26,122,74,0.12)}
+.card .icon{font-size:2.5rem;margin-bottom:0.5rem}
+.card .title{font-family:'Tiro Bangla',serif;font-size:1.1rem;color:#1c2e24;font-weight:700;margin-bottom:0.3rem}
+.card .subtitle{font-family:'Tiro Bangla',serif;font-size:0.85rem;color:#5a7a66}
+.card .badge{display:inline-block;background:#1a7a4a;color:white;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.75rem;font-weight:700;margin-top:0.5rem}
+.card .badge.coming{background:#e8730a}
+.card.disabled{opacity:0.5;cursor:not-allowed}
+.card.disabled:hover{transform:none;border-color:#c5dccb;box-shadow:none}
+input[type=text],input[type=password],textarea{width:100%;padding:0.7rem 1rem;border:1.5px solid #c5dccb;border-radius:8px;font-size:0.95rem;margin-bottom:0.8rem;font-family:'Tiro Bangla',serif}
+input:focus,textarea:focus{outline:none;border-color:#1a7a4a}
+textarea{min-height:120px;resize:vertical;font-family:monospace}
+label{font-size:0.85rem;font-weight:600;color:#1c2e24;display:block;margin-bottom:0.3rem}
+.btn{background:#1a7a4a;color:white;border:none;padding:0.7rem 1.5rem;border-radius:8px;font-family:'Tiro Bangla',serif;font-size:0.95rem;cursor:pointer;transition:all 0.15s;font-weight:600}
+.btn:hover{background:#2aad68;transform:translateY(-2px)}
+.btn-secondary{background:#5a7a66}
+.btn-secondary:hover{background:#6d927d}
+.btn-danger{background:#dc3545}
+.btn-danger:hover{background:#c82333}
+.btn-warning{background:#e8730a}
+.btn-warning:hover{background:#ff8c1a}
+.btn-group{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem}
+.msg{padding:0.7rem 1rem;border-radius:8px;margin-top:0.8rem;font-family:'Tiro Bangla',serif;font-size:0.9rem;display:none}
+.msg.show{display:block}
+.msg.success{background:#e8f7ef;color:#1a7a4a;border:1px solid #1a7a4a}
+.msg.error{background:#fdf0f0;color:#dc3545;border:1px solid #dc3545}
+.user-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:0.9rem}
+.user-table th{padding:0.7rem;text-align:left;border-bottom:2px solid #c5dccb;background:#e8f7ef;color:#1a7a4a;font-weight:600;font-family:'Tiro Bangla',serif}
+.user-table td{padding:0.6rem;border-bottom:1px solid #f0faf4;font-family:'Tiro Bangla',serif}
+.user-table tr:hover{background:#f0faf4}
+.delete-btn{background:#dc3545;color:white;border:none;padding:0.3rem 0.7rem;border-radius:4px;cursor:pointer;font-size:0.8rem}
+.delete-btn:hover{background:#c82333}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:999}
+.overlay.active{display:flex}
+.modal{background:white;border-radius:16px;padding:2rem;max-width:450px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto}
+.modal h2{font-family:'Tiro Bangla',serif;color:#1c2e24;margin-bottom:1rem;text-align:center}
+.info-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:0.8rem;font-family:'Tiro Bangla',serif;font-size:0.85rem;color:#856404;margin-bottom:1rem}
+.empty-state{text-align:center;padding:2rem;color:#5a7a66;font-family:'Tiro Bangla',serif}
+.file-input{display:none}
+.badge{display:inline-block;background:#1a7a4a;color:white;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.75rem;font-weight:700;margin-left:0.5rem}
+.tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;background:white;padding:0.5rem;border-radius:12px;border:1.5px solid #c5dccb}
+.tab{flex:1;padding:0.7rem;background:transparent;border:none;font-family:'Tiro Bangla',serif;font-size:1rem;cursor:pointer;border-radius:8px;transition:all 0.2s;color:#5a7a66;font-weight:600}
+.tab.active{background:#1a7a4a;color:white}
+.tab:hover:not(.active){background:#f0faf4}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.back-btn{background:white;color:#1a7a4a;border:1.5px solid #1a7a4a;padding:0.5rem 1.2rem;border-radius:8px;font-family:'Tiro Bangla',serif;font-size:0.9rem;cursor:pointer;margin-bottom:1rem;transition:all 0.2s}
+.back-btn:hover{background:#1a7a4a;color:white}
+.admin-toggle{background:transparent;color:white;border:1px solid rgba(255,255,255,0.3);padding:0.3rem 0.8rem;border-radius:6px;font-size:0.8rem;cursor:pointer;font-family:'Tiro Bangla',serif;transition:all 0.2s}
+.admin-toggle:hover{background:rgba(255,255,255,0.1)}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-logo">Test <span>Bazar</span> 🎯</div>
+  <div style="display:flex;align-items:center;gap:0.8rem;">
+    <div class="user-info" id="userInfo">🎓 Master Panel</div>
+    <button class="admin-toggle" onclick="toggleAdminMode()" id="adminToggleBtn">🔒 Admin</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb" id="breadcrumb">
+    <span class="breadcrumb-item active">🏠 Home</span>
+  </div>
+
+  <!-- TABS (Only visible in Admin Mode) -->
+  <div class="tabs" id="adminTabs" style="display:none;">
+    <button class="tab active" onclick="switchTab('navigation')">📖 Navigate</button>
+    <button class="tab" onclick="switchTab('users')">👥 Students</button>
+    <button class="tab" onclick="switchTab('tools')">🛠️ Tools</button>
+  </div>
+
+  <!-- TAB 1: NAVIGATION (Class → Subject → Chapter → Set) -->
+  <div class="tab-content active" id="tab-navigation">
+    
+    <!-- LEVEL 1: CLASS SELECTION -->
+    <div id="level-class" class="section-card">
+      <h2>🎓 Class নির্বাচন করুন</h2>
+      <div class="grid grid-3" id="classGrid"></div>
+    </div>
+
+    <!-- LEVEL 2: SUBJECT SELECTION -->
+    <div id="level-subject" class="section-card" style="display:none;">
+      <button class="back-btn" onclick="goBack('class')">← Class এ ফিরে যান</button>
+      <h2>📚 Subject নির্বাচন করুন</h2>
+      <div class="grid grid-3" id="subjectGrid"></div>
+    </div>
+
+    <!-- LEVEL 3: CHAPTER SELECTION -->
+    <div id="level-chapter" class="section-card" style="display:none;">
+      <button class="back-btn" onclick="goBack('subject')">← Subject এ ফিরে যান</button>
+      <h2>📖 Chapter নির্বাচন করুন</h2>
+      <div class="grid grid-3" id="chapterGrid"></div>
+    </div>
+
+    <!-- LEVEL 4: SET SELECTION -->
+    <div id="level-set" class="section-card" style="display:none;">
+      <button class="back-btn" onclick="goBack('chapter')">← Chapter এ ফিরে যান</button>
+      <h2>📝 Set নির্বাচন করুন</h2>
+      <div class="grid grid-4" id="setGrid"></div>
+    </div>
+
+  </div>
+
+  <!-- TAB 2: USER MANAGEMENT (Teacher Only) -->
+  <div class="tab-content" id="tab-users">
+    
+    <!-- Add Single User -->
+    <div class="section-card">
+      <h2>➕ নতুন Student যোগ করুন</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:0.8rem;align-items:end;">
+        <div>
+          <label>Username</label>
+          <input type="text" id="newUsername" placeholder="যেমন: sagun">
+        </div>
+        <div>
+          <label>Password</label>
+          <input type="text" id="newPassword" placeholder="যেমন: sagun123">
+        </div>
+        <button class="btn" onclick="addSingleUser()">➕ Add</button>
+      </div>
+      <div class="msg" id="singleAddMsg"></div>
+    </div>
+
+    <!-- Bulk Add -->
+    <div class="section-card">
+      <h2>📋 একসাথে অনেক Student যোগ করুন (Bulk Add)</h2>
+      <div class="info-box">
+        💡 <strong>Format:</strong> প্রতি লাইনে <code>username,password</code> লিখুন<br>
+        <strong>উদাহরণ:</strong><br>
+        sagun,sagun123<br>
+        samir,samir456<br>
+        pradip,pradip789
+      </div>
+      <textarea id="bulkInput" placeholder="sagun,sagun123&#10;samir,samir456&#10;pradip,pradip789&#10;mina,mina321&#10;seema,seema654"></textarea>
+      <button class="btn" onclick="addBulkUsers()">➕ সবাইকে একসাথে Add করুন</button>
+      <div class="msg" id="bulkMsg"></div>
+    </div>
+
+    <!-- User List -->
+    <div class="section-card">
+      <h2>📋 Student List <span class="badge" id="userListCount">0</span></h2>
+      <div id="userListContainer"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: TOOLS -->
+  <div class="tab-content" id="tab-tools">
+    
+    <!-- Export/Import -->
+    <div class="section-card">
+      <h2>📥 Export / Import Users</h2>
+      <p style="font-family:'Tiro Bangla',serif;font-size:0.9rem;color:#5a7a66;margin-bottom:1rem;">
+        একবার users add করলে Export করে backup রাখুন। অন্য device এ Import করতে পারবেন।
+      </p>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="exportUsers()">📥 Export Users (JSON)</button>
+        <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">📤 Import Users</button>
+        <input type="file" id="importFile" class="file-input" accept=".json" onchange="importUsers(event)">
+      </div>
+      <div class="msg" id="importMsg"></div>
+    </div>
+
+    <!-- Bulk Operations -->
+    <div class="section-card">
+      <h2>🗑️ Bulk Operations</h2>
+      <div class="btn-group">
+        <button class="btn btn-danger" onclick="deleteAllUsers()">🗑️ সব Students মুছুন</button>
+        <button class="btn btn-warning" onclick="resetAllAttempts()">🔄 সব Attempts Reset</button>
+        <button class="btn btn-secondary" onclick="loadSampleUsers()">📝 Sample Users Load করুন</button>
+      </div>
+      <div class="msg" id="toolsMsg"></div>
+    </div>
+
+    <!-- Info -->
+    <div class="section-card">
+      <h2>ℹ️ কীভাবে কাজ করে?</h2>
+      <div style="font-family:'Tiro Bangla',serif;font-size:0.9rem;color:#2c4035;line-height:1.8;">
+        <p><strong>✅ Step 1:</strong> Admin Mode এ গিয়ে students add করুন (single বা bulk)</p>
+        <p><strong>✅ Step 2:</strong> Navigate tab থেকে Class → Subject → Chapter → Set select করুন</p>
+        <p><strong>✅ Step 3:</strong> Student এর username/password দিয়ে login করুন</p>
+        <p><strong>✅ Step 4:</strong> Test দিন!</p>
+        <br>
+        <p>💡 <strong>সুবিধা:</strong> একবার student add করলে সব chapter এ সেই একই username/password দিয়ে login করা যাবে।</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Login Overlay -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal">
+    <h2>🔐 Student Login</h2>
+    <p style="font-family:'Tiro Bangla',serif;color:#5a7a66;text-align:center;margin-bottom:1rem;" id="loginInfo">Test শুরু করতে login করুন</p>
+    <label>Username</label>
+    <input type="text" id="loginUsername" placeholder="আপনার username">
+    <label>Password</label>
+    <input type="password" id="loginPassword" placeholder="আপনার password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" style="width:100%;" onclick="doLogin()">✅ Login করুন</button>
+    <div class="msg error" id="loginError">❌ ভুল Username বা Password!</div>
+    <button class="btn btn-secondary" style="width:100%;margin-top:0.5rem;" onclick="closeLogin()">❌ বাতিল</button>
+  </div>
+</div>
+
+<!-- Admin Password Overlay -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal">
+    <h2>🔒 Admin Access</h2>
+    <p style="font-family:'Tiro Bangla',serif;color:#5a7a66;text-align:center;margin-bottom:1rem;">Admin Panel এ প্রবেশ করতে password দিন</p>
+    <input type="password" id="adminPassInput" placeholder="Admin Password" onkeydown="if(event.key==='Enter')verifyAdmin()">
+    <button class="btn" style="width:100%;" onclick="verifyAdmin()">✅ প্রবেশ করুন</button>
+    <div class="msg error" id="adminPassError">❌ ভুল Password!</div>
+    <button class="btn btn-secondary" style="width:100%;margin-top:0.5rem;" onclick="closeAdminModal()">❌ বাতিল</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURATION
+// ============================================================
+const ADMIN_PASSWORD = 'teacher@2026'; // আপনার পছন্দের password দিন
+const USERS_STORAGE_KEY = 'testBazarCommonUsers_v1';
+const MAX_ATTEMPTS = 10;
+
+// ============================================================
+//  COURSE DATA STRUCTURE
+// ============================================================
+const COURSE_DATA = {
+  'class-10': {
+    name: 'Class 10',
+    icon: '🎓',
+    subjects: {
+      'history': {
+        name: 'History',
+        icon: '📜',
+        chapters: {
+          'ch-2': {
+            name: 'সংস্কার: বৈশিষ্ট্য ও পর্যালোচনা',
+            sets: 12,
+            status: 'ready'
+          },
+          'ch-3': {
+            name: 'প্রতিরোধ ও বিদ্রোহ',
+            sets: 12,
+            status: 'ready'
+          },
+          'ch-4': {
+            name: 'সংঘবদ্ধতার গোড়ার কথা',
+            sets: 12,
+            status: 'ready'
+          }
+        }
+      },
+      'life-science': {
+        name: 'Life Science',
+        icon: '🧬',
+        chapters: {
+          'ch-1': { name: 'জীবন প্রক্রিয়া', sets: 12, status: 'coming-soon' },
+          'ch-2': { name: 'পরিবেশ ও জীববৈচিত্র্য', sets: 12, status: 'coming-soon' }
+        }
+      },
+      'physical-science': {
+        name: 'Physical Science',
+        icon: '⚗️',
+        chapters: {
+          'ch-1': { name: 'পরিমাপ', sets: 12, status: 'coming-soon' }
+        }
+      }
+    }
+  },
+  'class-11': {
+    name: 'Class 11',
+    icon: '📚',
+    subjects: {
+      'physics': {
+        name: 'Physics',
+        icon: '⚛️',
+        chapters: {
+          'ch-1': { name: 'ভৌত জগৎ ও পরিমাপ', sets: 12, status: 'coming-soon' }
+        }
+      },
+      'chemistry': {
+        name: 'Chemistry',
+        icon: '🧪',
+        chapters: {
+          'ch-1': { name: 'রসায়নের মৌলিক ধারণা', sets: 12, status: 'coming-soon' }
+        }
+      }
+    }
+  },
+  'class-12': {
+    name: 'Class 12',
+    icon: '🎯',
+    subjects: {
+      'physics': {
+        name: 'Physics',
+        icon: '⚛️',
+        chapters: {
+          'ch-1': { name: 'তড়িৎ আধান ও ক্ষেত্র', sets: 12, status: 'coming-soon' }
+        }
+      }
+    }
+  }
+};
+
+// ============================================================
+//  NAVIGATION STATE
+// ============================================================
+let currentLevel = 'class';
+let selectedClass = null;
+let selectedSubject = null;
+let selectedChapter = null;
+let selectedSet = null;
+let isAdminMode = false;
+
+// ============================================================
+//  USER MANAGEMENT
+// ============================================================
+function loadUsers() {
+  const stored = localStorage.getItem(USERS_STORAGE_KEY);
+  return stored ? JSON.parse(stored) : [];
+}
+
+function saveUsers(users) {
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  updateStats();
+}
+
+let users = loadUsers();
+
+// ============================================================
+//  ADMIN MODE TOGGLE
+// ============================================================
+function toggleAdminMode() {
+  if (isAdminMode) {
+    // Logout from admin
+    isAdminMode = false;
+    sessionStorage.removeItem('adminAuth');
+    document.getElementById('adminTabs').style.display = 'none';
+    document.getElementById('adminToggleBtn').innerHTML = '🔒 Admin';
+    switchTab('navigation');
+    alert('✅ Admin Mode থেকে বের হয়েছেন');
+  } else {
+    // Show password prompt
+    document.getElementById('adminOverlay').classList.add('active');
+    document.getElementById('adminPassInput').value = '';
+    document.getElementById('adminPassError').classList.remove('show');
+    document.getElementById('adminPassInput').focus();
+  }
+}
+
+function verifyAdmin() {
+  const pass = document.getElementById('adminPassInput').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('adminOverlay').classList.remove('active');
+    sessionStorage.setItem('adminAuth', 'true');
+    isAdminMode = true;
+    document.getElementById('adminTabs').style.display = 'flex';
+    document.getElementById('adminToggleBtn').innerHTML = '🔓 Logout Admin';
+    switchTab('users');
+  } else {
+    document.getElementById('adminPassError').classList.add('show');
+    document.getElementById('adminPassInput').value = '';
+  }
+}
+
+function closeAdminModal() {
+  document.getElementById('adminOverlay').classList.remove('active');
+}
+
+// ============================================================
+//  NAVIGATION FUNCTIONS
+// ============================================================
+function showLevel(level) {
+  ['class', 'subject', 'chapter', 'set'].forEach(l => {
+    document.getElementById('level-' + l).style.display = (l === level) ? 'block' : 'none';
+  });
+  currentLevel = level;
+  updateBreadcrumb();
+}
+
+function selectClass(classId) {
+  selectedClass = classId;
+  selectedSubject = null;
+  selectedChapter = null;
+  selectedSet = null;
+  renderSubjects();
+  showLevel('subject');
+}
+
+function selectSubject(subjectId) {
+  selectedSubject = subjectId;
+  selectedChapter = null;
+  selectedSet = null;
+  renderChapters();
+  showLevel('chapter');
+}
+
+function selectChapter(chapterId) {
+  const chapter = COURSE_DATA[selectedClass].subjects[selectedSubject].chapters[chapterId];
+  if (chapter.status === 'coming-soon') {
+    alert('🚧 এই chapter টি শীঘ্রই আসছে!');
+    return;
+  }
+  selectedChapter = chapterId;
+  selectedSet = null;
+  renderSets();
+  showLevel('set');
+}
+
+function selectSet(setNum) {
+  selectedSet = setNum;
+  showLoginModal();
+}
+
+function goBack(level) {
+  if (level === 'class') {
+    selectedClass = null;
+    selectedSubject = null;
+    selectedChapter = null;
+    selectedSet = null;
+    showLevel('class');
+  } else if (level === 'subject') {
+    selectedSubject = null;
+    selectedChapter = null;
+    selectedSet = null;
+    showLevel('subject');
+  } else if (level === 'chapter') {
+    selectedChapter = null;
+    selectedSet = null;
+    showLevel('chapter');
+  }
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  let html = '<span class="breadcrumb-item" onclick="goBack(\'class\')">🏠 Home</span>';
+  
+  if (selectedClass) {
+    html += '<span class="breadcrumb-sep">›</span>';
+    html += `<span class="breadcrumb-item ${currentLevel === 'class' ? 'active' : ''}" onclick="goBack('class')">${COURSE_DATA[selectedClass].name}</span>`;
+  }
+  
+  if (selectedSubject) {
+    html += '<span class="breadcrumb-sep">›</span>';
+    html += `<span class="breadcrumb-item ${currentLevel === 'subject' ? 'active' : ''}" onclick="goBack('subject')">${COURSE_DATA[selectedClass].subjects[selectedSubject].name}</span>`;
+  }
+  
+  if (selectedChapter) {
+    html += '<span class="breadcrumb-sep">›</span>';
+    const chapterName = COURSE_DATA[selectedClass].subjects[selectedSubject].chapters[selectedChapter].name;
+    html += `<span class="breadcrumb-item ${currentLevel === 'chapter' ? 'active' : ''}" onclick="goBack('chapter')">Ch ${selectedChapter.split('-')[1]}: ${chapterName}</span>`;
+  }
+  
+  if (selectedSet) {
+    html += '<span class="breadcrumb-sep">›</span>';
+    html += `<span class="breadcrumb-item active">Set ${selectedSet}</span>`;
+  }
+  
+  bc.innerHTML = html;
+}
+
+// ============================================================
+//  RENDER FUNCTIONS
+// ============================================================
+function renderClasses() {
+  const grid = document.getElementById('classGrid');
+  grid.innerHTML = '';
+  
+  Object.keys(COURSE_DATA).forEach(classId => {
+    const cls = COURSE_DATA[classId];
+    const totalSubjects = Object.keys(cls.subjects).length;
+    const totalChapters = Object.values(cls.subjects).reduce((sum, subj) => sum + Object.keys(subj.chapters).length, 0);
+    
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="icon">${cls.icon}</div>
+      <div class="title">${cls.name}</div>
+      <div class="subtitle">${totalSubjects} Subjects • ${totalChapters} Chapters</div>
+    `;
+    card.onclick = () => selectClass(classId);
+    grid.appendChild(card);
+  });
+}
+
+function renderSubjects() {
+  const grid = document.getElementById('subjectGrid');
+  grid.innerHTML = '';
+  
+  const subjects = COURSE_DATA[selectedClass].subjects;
+  Object.keys(subjects).forEach(subjId => {
+    const subj = subjects[subjId];
+    const totalChapters = Object.keys(subj.chapters).length;
+    const readyChapters = Object.values(subj.chapters).filter(ch => ch.status === 'ready').length;
+    
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="icon">${subj.icon}</div>
+      <div class="title">${subj.name}</div>
+      <div class="subtitle">${totalChapters} Chapters</div>
+      <div class="badge">${readyChapters} Ready</div>
+    `;
+    card.onclick = () => selectSubject(subjId);
+    grid.appendChild(card);
+  });
+}
+
+function renderChapters() {
+  const grid = document.getElementById('chapterGrid');
+  grid.innerHTML = '';
+  
+  const chapters = COURSE_DATA[selectedClass].subjects[selectedSubject].chapters;
+  Object.keys(chapters).forEach(chId => {
+    const ch = chapters[chId];
+    const chNum = chId.split('-')[1];
+    
+    const card = document.createElement('div');
+    card.className = 'card' + (ch.status === 'coming-soon' ? ' disabled' : '');
+    card.innerHTML = `
+      <div class="icon">📖</div>
+      <div class="title">Chapter ${chNum}</div>
+      <div class="subtitle">${ch.name}</div>
+      <div class="badge ${ch.status === 'coming-soon' ? 'coming' : ''}">${ch.sets} Sets • ${ch.status === 'ready' ? '✅ Ready' : '🚧 Coming Soon'}</div>
+    `;
+    card.onclick = () => selectChapter(chId);
+    grid.appendChild(card);
+  });
+}
+
+function renderSets() {
+  const grid = document.getElementById('setGrid');
+  grid.innerHTML = '';
+  
+  const chapter = COURSE_DATA[selectedClass].subjects[selectedSubject].chapters[selectedChapter];
+  
+  for (let i = 1; i <= chapter.sets; i++) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="icon">📝</div>
+      <div class="title">Set ${i}</div>
+      <div class="subtitle">15 Questions • 10 Minutes</div>
+    `;
+    card.onclick = () => selectSet(i);
+    grid.appendChild(card);
+  }
+}
+
+// ============================================================
+//  LOGIN SYSTEM
+// ============================================================
+function showLoginModal() {
+  if (users.length === 0) {
+    alert('⚠️ কোনো student নেই!\n\nAdmin Mode এ গিয়ে প্রথমে students add করুন।');
+    return;
+  }
+  
+  const chapter = COURSE_DATA[selectedClass].subjects[selectedSubject].chapters[selectedChapter];
+  document.getElementById('loginInfo').textContent = `${COURSE_DATA[selectedClass].name} › ${COURSE_DATA[selectedClass].subjects[selectedSubject].name} › Ch ${selectedChapter.split('-')[1]} › Set ${selectedSet}`;
+  document.getElementById('loginOverlay').classList.add('active');
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('loginUsername').focus();
+}
+
+function closeLogin() {
+  document.getElementById('loginOverlay').classList.remove('active');
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value.trim();
+  
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if (!user) {
+    document.getElementById('loginError').classList.add('show');
+    return;
+  }
+  
+  // Check attempts
+  const attemptKey = `${selectedClass}_${selectedSubject}_${selectedChapter}_${selectedSet}`;
+  const attempts = user.attempts[attemptKey] || 0;
+  
+  if (attempts >= MAX_ATTEMPTS) {
+    alert(`⚠️ আপনি এই set এর সর্বোচ্চ ${MAX_ATTEMPTS} বার test দিয়েছেন।`);
+    return;
+  }
+  
+  // Increment attempts
+  user.attempts[attemptKey] = attempts + 1;
+  saveUsers(users);
+  
+  // Close login and redirect to quiz
+  closeLogin();
+  startQuiz(user);
+}
+
+function startQuiz(user) {
+  // Build URL with parameters
+  const params = new URLSearchParams({
+    class: selectedClass,
+    subject: selectedSubject,
+    chapter: selectedChapter,
+    set: selectedSet,
+    user: user.username
+  });
+  
+  // Redirect to quiz.html
+  window.location.href = `quiz.html?${params.toString()}`;
+}
+
+// ============================================================
+//  USER OPERATIONS
+// ============================================================
+function addSingleUser() {
+  const username = document.getElementById('newUsername').value.trim().toLowerCase();
+  const password = document.getElementById('newPassword').value.trim();
+  const msgEl = document.getElementById('singleAddMsg');
+  
+  if (!username || !password) {
+    showMsg(msgEl, '❌ Username ও Password দিন', 'error');
+    return;
+  }
+  
+  if (users.find(u => u.username === username)) {
+    showMsg(msgEl, `❌ "${username}" আগেই আছে!`, 'error');
+    return;
+  }
+  
+  users.push({username, password, attempts:{}});
+  saveUsers(users);
+  
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newPassword').value = '';
+  
+  showMsg(msgEl, `✅ "${username}" সফলভাবে যোগ হয়েছে!`, 'success');
+  renderUserList();
+}
+
+function addBulkUsers() {
+  const input = document.getElementById('bulkInput').value.trim();
+  const msgEl = document.getElementById('bulkMsg');
+  
+  if (!input) {
+    showMsg(msgEl, '❌ কিছু লিখুন', 'error');
+    return;
+  }
+  
+  const lines = input.split('\n').map(l => l.trim()).filter(l => l);
+  let added = 0, skipped = 0, errors = 0;
+  
+  lines.forEach(line => {
+    const parts = line.split(',').map(p => p.trim());
+    if (parts.length < 2) { errors++; return; }
+    const [username, password] = [parts[0].toLowerCase(), parts[1]];
+    
+    if (!username || !password) { errors++; return; }
+    if (users.find(u => u.username === username)) { skipped++; return; }
+    
+    users.push({username, password, attempts:{}});
+    added++;
+  });
+  
+  saveUsers(users);
+  document.getElementById('bulkInput').value = '';
+  
+  showMsg(msgEl, `✅ ${added} জন add | ⚠️ ${skipped} skip | ❌ ${errors} error`, added > 0 ? 'success' : 'error');
+  renderUserList();
+}
+
+function deleteUser(index) {
+  if (!confirm(`"${users[index].username}" কে মুছে ফেলবেন?`)) return;
+  const name = users[index].username;
+  users.splice(index, 1);
+  saveUsers(users);
+  renderUserList();
+  alert(`✅ "${name}" মুছে ফেলা হয়েছে`);
+}
+
+function deleteAllUsers() {
+  if (!confirm('⚠️ সব students মুছে ফেলা হবে। নিশ্চিত?')) return;
+  if (!confirm('⚠️ FINAL WARNING: এটি undo করা যাবে না!')) return;
+  users = [];
+  saveUsers(users);
+  renderUserList();
+  showMsg(document.getElementById('toolsMsg'), '✅ সব students মুছে ফেলা হয়েছে', 'success');
+}
+
+function resetAllAttempts() {
+  if (!confirm('সবার test attempts reset হবে। নিশ্চিত?')) return;
+  users = users.map(u => ({...u, attempts:{}}));
+  saveUsers(users);
+  showMsg(document.getElementById('toolsMsg'), '✅ সব attempts reset হয়েছে', 'success');
+}
+
+function loadSampleUsers() {
+  const samples = [
+    {username:'sagun', password:'sagun123'},
+    {username:'samir', password:'samir456'},
+    {username:'pradip', password:'pradip789'},
+    {username:'mina', password:'mina321'},
+    {username:'seema', password:'seema654'}
+  ];
+  
+  let added = 0;
+  samples.forEach(s => {
+    if (!users.find(u => u.username === s.username)) {
+      users.push({...s, attempts:{}});
+      added++;
+    }
+  });
+  
+  saveUsers(users);
+  renderUserList();
+  showMsg(document.getElementById('toolsMsg'), `✅ ${added} জন sample user add হয়েছে`, 'success');
+}
+
+// ============================================================
+//  EXPORT / IMPORT
+// ============================================================
+function exportUsers() {
+  if (users.length === 0) {
+    alert('❌ Export করার মতো কোনো user নেই');
+    return;
+  }
+  
+  const data = JSON.stringify(users, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `testbazar_users_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importUsers(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('Invalid format');
+      
+      let added = 0, skipped = 0;
+      imported.forEach(u => {
+        if (!u.username || !u.password) return;
+        if (users.find(x => x.username === u.username)) { skipped++; return; }
+        users.push({username:u.username.toLowerCase(), password:u.password, attempts:u.attempts||{}});
+        added++;
+      });
+      
+      saveUsers(users);
+      renderUserList();
+      showMsg(document.getElementById('importMsg'), `✅ ${added} জন import | ⚠️ ${skipped} skip`, 'success');
+    } catch (err) {
+      showMsg(document.getElementById('importMsg'), '❌ Invalid file format!', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============================================================
+//  RENDER USER LIST
+// ============================================================
+function renderUserList() {
+  const container = document.getElementById('userListContainer');
+  document.getElementById('userListCount').textContent = users.length;
+  
+  if (users.length === 0) {
+    container.innerHTML = '<div class="empty-state">📭 কোনো student নেই।<br>উপরে থেকে add করুন।</div>';
+    return;
+  }
+  
+  let html = `
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Total Attempts</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  
+  users.forEach((u, i) => {
+    const totalAttempts = Object.values(u.attempts || {}).reduce((a,b) => a+b, 0);
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${u.username}</strong></td>
+        <td style="font-family:monospace;color:#5a7a66;">${u.password}</td>
+        <td>${totalAttempts}</td>
+        <td><button class="delete-btn" onclick="deleteUser(${i})">🗑️</button></td>
+      </tr>
+    `;
+  });
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ============================================================
+//  UI HELPERS
+// ============================================================
+function showMsg(el, text, type) {
+  el.textContent = text;
+  el.className = 'msg show ' + type;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function updateStats() {
+  document.getElementById('userInfo').textContent = `🎓 ${users.length} Students`;
+  document.getElementById('userListCount').textContent = users.length;
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  
+  // Find and activate the clicked tab
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => {
+    if (t.textContent.toLowerCase().includes(tabName === 'navigation' ? 'navigate' : tabName)) {
+      t.classList.add('active');
+    }
+  });
+  
+  document.getElementById('tab-' + tabName).classList.add('active');
+}
+
+// ============================================================
+//  INITIALIZATION
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  // Check if admin was already authenticated in this session
+  if (sessionStorage.getItem('adminAuth') === 'true') {
+    isAdminMode = true;
+    document.getElementById('adminTabs').style.display = 'flex';
+    document.getElementById('adminToggleBtn').innerHTML = '🔓 Logout Admin';
+  }
+  
+  renderClasses();
+  renderUserList();
+  updateStats();
+});
+</script>
+
+</body>
+</html>
